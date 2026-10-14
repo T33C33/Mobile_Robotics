@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mobile Robotics Track | Aurora Core Workshop Series 3.0</title>
+<meta name="description" content="The 8-week mobile robotics syllabus for the Aurora Core Workshop Series 3.0 by Aurora Robotics. Covers control theory, ROS2, Gazebo, differential drive and Ackermann steering.">
+<meta name="theme-color" content="#000000">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'none'; object-src 'none'">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!--
+  FILES
+  fonts/Montserrat-VariableFont_wght.ttf   Official font (see fonts/README.txt)
+  images/*.jpg                             Photos (see images/README.txt)
+  Replace the placeholder images with photorealistic photos using the same filenames.
+-->
+
+<style>
+@font-face{
+  font-family:'Montserrat Local';
+  src:url('fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
+</style>
+<style>
+:root{
+  --lime:#BEFF00;
+  --lime-dim:#9fd400;
+  --black:#000000;
+  --panel:#101010;
+  --panel-2:#171717;
+  --line:#2a2a2a;
+  --text:#f2f2f2;
+  --muted:#a8a8a8;
+  --radius-lg:24px;
+  --radius-md:16px;
+  --radius-sm:10px;
+  --wrap:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--black);color:var(--text);
+  font-family:'Montserrat Local','Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  font-size:1rem;line-height:1.65;font-weight:400;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--lime);outline-offset:3px;border-radius:6px}
+.wrap{width:min(var(--wrap),100% - 40px);margin-inline:auto}
+.skip{position:absolute;left:-999px;top:8px;background:var(--lime);color:#000;padding:10px 16px;border-radius:8px;font-weight:700;z-index:100}
+.skip:focus{left:12px}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;letter-spacing:.01em}
+.brand-mark{width:26px;height:26px;border-radius:50%;background:var(--lime);position:relative;flex:none}
+.brand-mark::after{content:"";position:absolute;inset:7px;border-radius:50%;background:#000}
+.brand span{font-weight:500;color:var(--muted)}
+.nav{display:flex;gap:4px;align-items:center}
+.nav a{text-decoration:none;font-size:.88rem;font-weight:600;color:var(--muted);padding:8px 12px;border-radius:999px;transition:color .2s,background .2s}
+.nav a:hover{color:#000;background:var(--lime)}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;font:inherit;font-weight:600;cursor:pointer}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 26px;border-radius:999px;font-weight:700;text-decoration:none;font-size:.95rem;border:2px solid var(--lime);transition:transform .2s,background .2s,color .2s}
+.btn-primary{background:var(--lime);color:#000}
+.btn-primary:hover{background:#d4ff4d;border-color:#d4ff4d}
+.btn-ghost{background:transparent;color:var(--lime)}
+.btn-ghost:hover{background:var(--lime);color:#000}
+
+/* Hero */
+.hero{padding:72px 0 56px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(2.6rem,6.4vw,5rem);line-height:1.02;font-weight:900;letter-spacing:-.03em;margin:0 0 22px}
+.hero h1 .hl{background:var(--lime);color:#000;padding:0 .14em;border-radius:.12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lead{font-size:1.15rem;color:var(--muted);max-width:56ch;margin:0 0 32px}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px}
+.meta-line{margin-top:28px;color:var(--muted);font-size:.9rem}
+.meta-line strong{color:var(--text);font-weight:600}
+
+/* Image frames */
+.frame{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;background:var(--panel);border:1px solid var(--line);isolation:isolate}
+.frame img{width:100%;height:100%;object-fit:cover}
+.frame::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:
+    linear-gradient(var(--line) 1px,transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/32px 32px,
+    #0a0a0a;
+}
+.frame::after{content:"";position:absolute;left:18px;bottom:18px;width:44px;height:6px;border-radius:3px;background:var(--lime);z-index:2}
+.frame img{position:relative;z-index:1}
+.frame.missing img{display:none}
+.frame-hero{aspect-ratio:4/5}
+.frame-wide{aspect-ratio:16/6}
+.frame-card{aspect-ratio:16/9}
+
+/* Stats */
+.stats{padding:8px 0 24px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat{background:var(--lime);color:#000;border-radius:var(--radius-md);padding:24px}
+.stat b{display:block;font-size:2.6rem;font-weight:900;line-height:1;letter-spacing:-.03em}
+.stat p{margin:10px 0 0;font-weight:600;font-size:.92rem;line-height:1.4}
+
+/* Sections */
+section.block{padding:84px 0}
+.sec-head{max-width:720px;margin-bottom:44px}
+.sec-head h2{font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0 0 14px}
+.sec-head p{color:var(--muted);margin:0;font-size:1.05rem}
+
+/* Cards */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);padding:28px;transition:border-color .2s}
+.card:hover{border-color:var(--lime)}
+.card h3{margin:0 0 10px;font-size:1.2rem;font-weight:700;line-height:1.3}
+.card p{margin:0;color:var(--muted);font-size:.97rem}
+.card p+p{margin-top:12px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.icon{width:46px;height:46px;border-radius:12px;background:var(--lime);display:grid;place-items:center;margin-bottom:18px}
+.icon svg{width:24px;height:24px;stroke:#000;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Overview */
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.overview-grid .prose p{color:var(--muted);margin:0 0 18px;font-size:1.05rem}
+.overview-grid .prose p strong{color:var(--text)}
+
+/* Glance */
+.glance a{display:flex;flex-direction:column;gap:12px;text-decoration:none;min-height:150px}
+.glance .wk{font-size:.85rem;font-weight:700;color:var(--lime)}
+.glance .ttl{font-weight:700;font-size:1.05rem;line-height:1.3}
+
+/* Phases and weeks */
+.phase{margin-bottom:72px}
+.phase:last-child{margin-bottom:0}
+.phase-head{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;margin-bottom:28px}
+.phase-head h3{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;margin:0 0 10px;letter-spacing:-.01em}
+.phase-head p{color:var(--muted);margin:0}
+.phase-head .frame{aspect-ratio:16/8}
+.week{display:flex;flex-direction:column}
+.week-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.week-num{flex:none;min-width:54px;height:54px;border-radius:14px;background:var(--lime);color:#000;display:grid;place-items:center;font-weight:900;font-size:1.5rem}
+.week-top small{display:block;color:var(--muted);font-size:.8rem;font-weight:600}
+.week-top h4{margin:0;font-size:1.15rem;font-weight:700;line-height:1.25}
+.topics{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.topics li{position:relative;padding-left:22px;color:var(--text);font-size:.95rem}
+.topics li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;border-radius:50%;background:var(--lime)}
+.topics li span{display:block;color:var(--muted);font-size:.88rem}
+.week-note{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+
+/* Notes */
+.notes{margin-top:56px;background:var(--panel-2);border:1px solid var(--line);border-left:6px solid var(--lime);border-radius:var(--radius-md);padding:30px}
+.notes h3{margin:0 0 14px;font-size:1.25rem;font-weight:700}
+.notes ul{margin:0;padding-left:20px;color:var(--muted)}
+.notes li{margin-bottom:10px}
+.notes li:last-child{margin-bottom:0}
+
+/* Delivery */
+.delivery-top{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.delivery-top .frame{aspect-ratio:auto;min-height:260px;height:100%}
+
+/* Philosophy */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.chip{border:1px solid var(--lime);color:var(--lime);border-radius:999px;padding:7px 16px;font-weight:600;font-size:.88rem}
+.rhythm{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+/* Robots */
+.robot .frame{margin-bottom:22px}
+.tag{display:inline-block;background:var(--lime);color:#000;font-weight:700;font-size:.8rem;padding:5px 12px;border-radius:999px;margin-bottom:12px}
+
+/* Requirements */
+.req-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.req-list li{padding-left:28px;position:relative;color:var(--muted);font-size:.97rem}
+.req-list.yes li::before{content:"";position:absolute;left:2px;top:.35em;width:12px;height:7px;border-left:3px solid var(--lime);border-bottom:3px solid var(--lime);transform:rotate(-45deg)}
+.req-list.no li::before,.req-list.no li::after{content:"";position:absolute;left:0;top:.72em;width:14px;height:3px;background:var(--muted);border-radius:2px}
+.req-list.no li::before{transform:rotate(45deg)}
+.req-list.no li::after{transform:rotate(-45deg)}
+
+/* Footer */
+footer{background:var(--lime);color:#000;margin-top:40px}
+.foot{display:grid;grid-template-columns:1fr 1.3fr;gap:40px;padding:64px 0}
+.foot h2{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.02em;line-height:1.05;margin:0 0 14px}
+.foot p{margin:0;font-weight:500;max-width:36ch}
+.contact-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.contact-list li{background:#000;color:var(--text);border-radius:var(--radius-md);padding:18px 20px}
+.contact-list li.wide{grid-column:1/-1}
+.contact-list small{display:block;color:var(--lime);font-weight:700;font-size:.82rem;margin-bottom:4px}
+.contact-list a{font-weight:600;text-decoration:none;word-break:break-word}
+.contact-list a:hover{text-decoration:underline;text-underline-offset:4px}
+.legal{border-top:1px solid rgba(0,0,0,.25);padding:20px 0;font-size:.85rem;font-weight:500}
+
+/* Responsive */
+@media (max-width:1020px){
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:860px){
+  .menu-btn{display:inline-block}
+  .nav{position:absolute;top:68px;left:0;right:0;background:#000;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;padding:12px 20px 20px;display:none}
+  .nav.open{display:flex}
+  .nav a{padding:14px 12px;font-size:1rem;border-radius:10px}
+  .hero{padding-top:40px}
+  .hero-grid,.overview-grid,.phase-head,.delivery-top,.rhythm,.foot{grid-template-columns:1fr}
+  .frame-hero{aspect-ratio:16/10}
+  .phase-head .frame{order:-1}
+  .grid-2{grid-template-columns:1fr}
+  section.block{padding:60px 0}
+}
+@media (max-width:620px){
+  .grid-3,.grid-4{grid-template-columns:1fr}
+  .glance.grid-4{grid-template-columns:repeat(2,1fr)}
+  .contact-list{grid-template-columns:1fr}
+  .stat b{font-size:2.1rem}
+  .card{padding:22px}
+  .glance a{min-height:130px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Aurora Robotics home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      Aurora Robotics
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#overview">Overview</a>
+      <a href="#glance">At a glance</a>
+      <a href="#curriculum">Curriculum</a>
+      <a href="#delivery">Delivery</a>
+      <a href="#philosophy">Philosophy</a>
+      <a href="#platforms">Robots</a>
+      <a href="#requirements">Requirements</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- Hero -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <h1><span class="hl">Mobile</span> Robotics</h1>
+      <p class="lead">An 8-week syllabus for the mobile robotics track of the Aurora Core Workshop Series 3.0. Students move from the basics of control and Linux to full ROS2 simulations of a differential drive robot and an Ackermann steering robot.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#curriculum">View the curriculum</a>
+        <a class="btn btn-ghost" href="#contact">Contact us</a>
+      </div>
+      <p class="meta-line">Syllabus by <strong>O.C Kogo (CeeTee)</strong>, based on the Series 2.0 mobile robotics track designed by Bakel.</p>
+    </div>
+    <figure class="frame frame-hero">
+      <img src="images/hero-robot.jpg" alt="A wheeled ground robot on a workshop floor" width="1200" height="1500" fetchpriority="high">
+    </figure>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats" aria-label="Course format">
+  <div class="wrap stat-grid">
+    <div class="stat"><b>8</b><p>weeks of structured learning</p></div>
+    <div class="stat"><b>2</b><p>scheduled classes each week</p></div>
+    <div class="stat"><b>90</b><p>minutes per class</p></div>
+    <div class="stat"><b>2</b><p>optional 30-minute office hours each week</p></div>
+  </div>
+</section>
+
+<!-- Overview -->
+<section class="block" id="overview">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>What this track covers</h2>
+      <p>The track keeps a tight scope so that every week builds on the one before it.</p>
+    </div>
+    <div class="overview-grid">
+      <div class="prose">
+        <p>This document sets out the full plan for the <strong>mobile robotics track</strong> of the Aurora Core Workshop Series 3.0. It lists the topics and projects for each week, explains how the course is delivered, and gives the reasoning behind the order of topics.</p>
+        <p>The syllabus is strongly modeled on the Series 2.0 mobile robotics track designed by Bakel. A few changes were made to match the differences and limits between his setup and the one used here.</p>
+        <p>Design falls outside the scope of the course and is only discussed briefly.</p>
+      </div>
+      <div class="grid-2">
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="7" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M4 14l2-6h9l3 4h2v2"/></svg></div>
+          <h3>Ground robotics only</h3>
+          <p>The track is limited to robots that move on the ground.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div>
+          <h3>Two drive systems</h3>
+          <p>Differential drive and Ackermann steering are both covered in depth.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg></div>
+          <h3>Omni-drive introduced</h3>
+          <p>The omni-drive system is introduced at the start of the course but is not covered further.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+          <h3>Simulation based</h3>
+          <p>All practical work runs in Gazebo and rviz on the student's own laptop or PC.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- At a glance -->
+<section class="block" id="glance" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Syllabus at a glance</h2>
+      <p>Select a week to jump to its full outline.</p>
+    </div>
+    <div class="grid-4 glance">
+      <article class="card"><a href="#week-1"><span class="wk">Week 1</span><span class="ttl">Introduction to Mobile Robotics</span></a></article>
+      <article class="card"><a href="#week-2"><span class="wk">Week 2</span><span class="ttl">Control Theory and Embedded Systems</span></a></article>
+      <article class="card"><a href="#week-3"><span class="wk">Week 3</span><span class="ttl">Linux and Version Control</span></a></article>
+      <article class="card"><a href="#week-4"><span class="wk">Week 4</span><span class="ttl">Introduction to ROS2</span></a></article>
+      <article class="card"><a href="#week-5"><span class="wk">Week 5</span><span class="ttl">Introduction to the Differential Drive System</span></a></article>
+      <article class="card"><a href="#week-6"><span class="wk">Week 6</span><span class="ttl">Differential Drive System continued</span></a></article>
+      <article class="card"><a href="#week-7"><span class="wk">Week 7</span><span class="ttl">Introduction to the Ackermann Steering</span></a></article>
+      <article class="card"><a href="#week-8"><span class="wk">Week 8</span><span class="ttl">Ackermann Steering continued</span></a></article>
+    </div>
+  </div>
+</section>
+
+<!-- Curriculum -->
+<section class="block" id="curriculum" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Detailed course outline</h2>
+      <p>The eight weeks fall into three stages. The first four weeks build the shared groundwork. The last four apply it to two different robots.</p>
+    </div>
+
+    <!-- Stage 1 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div>
+          <h3>Weeks 1 to 4: Groundwork</h3>
+          <p>Students learn what mobile robotics is, how control and sensing work, how to use Linux and Git, and how ROS2 and Gazebo fit together.</p>
+        </div>
+        <figure class="frame">
+          <img src="images/laptop-code.jpg" alt="A laptop showing a terminal and code" width="1200" height="600" loading="lazy">
+        </figure>
+      </div>
+      <div class="grid-2">
+        <article class="card week" id="week-1">
+          <div class="week-top">
+            <div class="week-num">1</div>
+            <div><small>Week 1</small><h4>Introduction to Mobile Robotics</h4></div>
+          </div>
+          <ul class="topics">
+            <li>Mobile robotics definition</li>
+            <li>Subsections within mobile robotics</li>
+            <li>Mobile robotics architecture</li>
+            <li>Linux dual boot or WSL installation</li>
+          </ul>
+        </article>
+
+        <article class="card week" id="week-2">
+          <div class="week-top">
+            <div class="week-num">2</div>
+            <div><small>Week 2</small><h4>Control Theory and Embedded Systems</h4></div>
+          </div>
+          <ul class="topics">
+            <li>Embedded computing<span>SBCs, microcontrollers, SOCs and microprocessors</span></li>
+            <li>Sensors<span>IMUs, lidars, encoders, RGBD cameras and ultrasonic sensors</span></li>
+            <li>Actuators<span>Servo motors and linear servo motors</span></li>
+            <li>Feedforward versus feedback control</li>
+            <li>PID control</li>
+            <li>Kalman filters</li>
+          </ul>
+          <p class="week-note">The embedded systems topics are introduced but not covered in depth. Further discussion happens in office hours and Nerd Out classes.</p>
+        </article>
+
+        <article class="card week" id="week-3">
+          <div class="week-top">
+            <div class="week-num">3</div>
+            <div><small>Week 3</small><h4>Linux and Version Control</h4></div>
+          </div>
+          <ul class="topics">
+            <li>Linux command line instructions</li>
+            <li>Introduction to Git</li>
+            <li>Introduction to GitHub</li>
+            <li>ROS2 installation</li>
+          </ul>
+        </article>
+
+        <article class="card week" id="week-4">
+          <div class="week-top">
+            <div class="week-num">4</div>
+            <div><small>Week 4</small><h4>Introduction to ROS2 and Gazebo</h4></div>
+          </div>
+          <ul class="topics">
+            <li>ROS2 design philosophy</li>
+            <li>Nodes, services and actions</li>
+            <li>Implementing a simple publisher and subscriber node in Python</li>
+            <li>Introduction to Gazebo and its ROS2 interface</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+
+    <!-- Stage 2 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div>
+          <h3>Weeks 5 and 6: Differential drive</h3>
+          <p>Students work out the kinematics of a two-wheeled drive, then build up the Fenrir robot in simulation from basic motion through to navigation.</p>
+        </div>
+        <figure class="frame">
+          <img src="images/diff-drive.jpg" alt="A two-wheeled differential drive robot" width="1200" height="600" loading="lazy">
+        </figure>
+      </div>
+      <div class="grid-2">
+        <article class="card week" id="week-5">
+          <div class="week-top">
+            <div class="week-num">5</div>
+            <div><small>Week 5</small><h4>Introduction to the Differential Drive System</h4></div>
+          </div>
+          <ul class="topics">
+            <li>Differential drive kinematics</li>
+            <li>ROS2 implementation of the Fenrir differential drive robot in Gazebo and rviz</li>
+          </ul>
+        </article>
+
+        <article class="card week" id="week-6">
+          <div class="week-top">
+            <div class="week-num">6</div>
+            <div><small>Week 6</small><h4>Differential Drive System continued</h4></div>
+          </div>
+          <ul class="topics">
+            <li>ROS2 implementation continued: control packages</li>
+            <li>ROS2 implementation continued: SLAM and navigation</li>
+            <li>Active vision implementation</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+
+    <!-- Stage 3 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div>
+          <h3>Weeks 7 and 8: Ackermann steering</h3>
+          <p>Students switch to a car-like platform, learn its kinematics, and repeat the control, SLAM and navigation work on the Yahboom Rosmaster X3.</p>
+        </div>
+        <figure class="frame">
+          <img src="images/ackermann.jpg" alt="A car-like robot with steered front wheels" width="1200" height="600" loading="lazy">
+        </figure>
+      </div>
+      <div class="grid-2">
+        <article class="card week" id="week-7">
+          <div class="week-top">
+            <div class="week-num">7</div>
+            <div><small>Week 7</small><h4>Introduction to the Ackermann Steering</h4></div>
+          </div>
+          <ul class="topics">
+            <li>Ackermann steering kinematics</li>
+            <li>ROS2 implementation of the Yahboom Rosmaster X3 in Gazebo and rviz</li>
+          </ul>
+        </article>
+
+        <article class="card week" id="week-8">
+          <div class="week-top">
+            <div class="week-num">8</div>
+            <div><small>Week 8</small><h4>Ackermann Steering continued</h4></div>
+          </div>
+          <ul class="topics">
+            <li>ROS2 implementation continued: control packages</li>
+            <li>ROS2 implementation continued: SLAM and navigation</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+
+    <aside class="notes" aria-labelledby="notes-title">
+      <h3 id="notes-title">Notes on the outline</h3>
+      <ul>
+        <li>The embedded systems topics (sensors, actuators and embedded computing) will not be covered in depth, because a full understanding is beyond the scope of this course. More conversation and explanation will take place in office hours and Nerd Out classes.</li>
+        <li>The Ackermann drive robot was changed from the Rosmaster A1 to the Rosmaster X3 because STL files for simulation are available for the X3.</li>
+        <li>The differential drive robot was changed from the tracked robot used in the previous workshop to Fenrir, a ROS2 based simulated robot developed from the TurtleBot3 Waffle.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- Delivery -->
+<section class="block" id="delivery" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Course delivery</h2>
+      <p>Fitting this much material into two classes a week over eight weeks is hard. Extra structures are in place so that every student can keep up.</p>
+    </div>
+    <div class="delivery-top">
+      <figure class="frame">
+        <img src="images/classroom.jpg" alt="Students working on laptops during a robotics workshop" width="1200" height="800" loading="lazy">
+      </figure>
+      <article class="card">
+        <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></div>
+        <h3>Scheduled classes</h3>
+        <p>There are two classes each week, and each runs for ninety minutes. The class days have not been confirmed yet and will be announced once the schedule is final.</p>
+      </article>
+    </div>
+    <div class="grid-3">
+      <article class="card">
+        <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Office hours</h3>
+        <p>Each week has two flexible, optional meetings of thirty minutes. They are used to break down complex topics, fix code and solve system-specific problems.</p>
+        <p>Students may still contact the team outside office hours. Holding the sessions at fixed points lets the team collect feedback on general problems and improve later workshops.</p>
+      </article>
+      <article class="card">
+        <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 014 4v12H8a4 4 0 01-4-4V4z"/><path d="M8 9h8M8 13h6"/></svg></div>
+        <h3>Research assignments</h3>
+        <p>Strong robotics engineers need to be able to research. Students will read canonical research papers and textbooks for the more theoretical and algorithmic topics. They will not be asked to do graduate-level research.</p>
+        <p>The aim is to teach students to parse dense material, so that they use AI as a tool and not as the solution. YouTube videos are also shared as support material.</p>
+      </article>
+      <article class="card">
+        <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0012 2z"/></svg></div>
+        <h3>Nerd Out classes</h3>
+        <p>These optional classes go deeper into topics already covered, and they give students a space to share their own knowledge and ideas.</p>
+        <p>They are held every two weeks, have no fixed duration, and are scheduled around the availability of team members.</p>
+      </article>
+    </div>
+    <div class="frame frame-wide" style="margin-top:20px">
+      <img src="images/research.jpg" alt="Textbooks and research papers on a desk" width="1600" height="600" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- Philosophy -->
+<section class="block" id="philosophy" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Course philosophy</h2>
+      <p>The course aims at a strong conceptual understanding of the fundamentals behind mobile robotics, together with practical experience. Three phrases sum this up.</p>
+    </div>
+    <div class="grid-3">
+      <article class="card">
+        <h3>Conceptual understanding</h3>
+        <p>Students should be painted a picture and not made to cram a formula. They should hold a clear mental image of each concept, so that their understanding stays deep even when some details are fuzzy.</p>
+      </article>
+      <article class="card">
+        <h3>Fundamental topics</h3>
+        <p>The basics, such as linear algebra and data structures and algorithms, are repeated and stressed throughout the course as very important.</p>
+      </article>
+      <article class="card">
+        <h3>Practical experience</h3>
+        <p>There is no access to real robots. Simulations in Gazebo and rviz stand in for them and fit naturally with the rest of the course.</p>
+      </article>
+    </div>
+    <div class="rhythm">
+      <article class="card">
+        <h3>How each week runs</h3>
+        <p>Every week starts with writing the algorithms by hand, figuratively speaking. Only then does the class move to the community-standard implementations.</p>
+      </article>
+      <article class="card">
+        <h3>Where each topic sits</h3>
+        <p>Every topic in the syllabus falls under one of these areas.</p>
+        <div class="chips">
+          <span class="chip">Math</span>
+          <span class="chip">Physics</span>
+          <span class="chip">Control</span>
+          <span class="chip">AI</span>
+          <span class="chip">Embedded systems</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Platforms -->
+<section class="block" id="platforms" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Robots and tools</h2>
+      <p>Students work in simulation with ROS2, Gazebo and rviz. Two robot models carry the practical work.</p>
+    </div>
+    <div class="grid-2">
+      <article class="card robot">
+        <figure class="frame frame-card">
+          <img src="images/robot-fenrir.jpg" alt="A TurtleBot3 Waffle style differential drive robot" width="1200" height="675" loading="lazy">
+        </figure>
+        <span class="tag">Weeks 5 and 6</span>
+        <h3>Fenrir</h3>
+        <p>A ROS2 based simulated differential drive robot developed from the TurtleBot3 Waffle. It replaces the tracked robot used in the previous workshop.</p>
+      </article>
+      <article class="card robot">
+        <figure class="frame frame-card">
+          <img src="images/robot-x3.jpg" alt="A Yahboom Rosmaster X3 research robot" width="1200" height="675" loading="lazy">
+        </figure>
+        <span class="tag">Weeks 7 and 8</span>
+        <h3>Yahboom Rosmaster X3</h3>
+        <p>The Ackermann steering platform for the course, simulated in Gazebo and rviz. It replaces the Rosmaster A1 because STL files for simulation are available.</p>
+      </article>
+    </div>
+    <div class="frame frame-wide" style="margin-top:20px">
+      <img src="images/simulation.jpg" alt="A robot simulation running on a monitor" width="1600" height="600" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- Requirements -->
+<section class="block" id="requirements" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Assumptions and requirements</h2>
+      <p>Students do not need a robotics background to join. They do need some programming experience and their own computer.</p>
+    </div>
+    <div class="grid-2">
+      <article class="card">
+        <h3>What students should bring</h3>
+        <ul class="req-list yes">
+          <li>Some programming knowledge. Python and C++ are preferred, but any language is acceptable, even at a basic level.</li>
+          <li>Rudimentary calculus at a conceptual level.</li>
+          <li>A laptop or PC to complete the course.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>What is not assumed</h3>
+        <ul class="req-list no">
+          <li>Linear algebra</li>
+          <li>Control theory</li>
+          <li>ROS2</li>
+          <li>AI implementation</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="contact">
+  <div class="wrap foot">
+    <div>
+      <h2>Contact Us</h2>
+      <p>Questions about the mobile robotics track or the Aurora Core Workshop Series 3.0 can be sent through any of these channels.</p>
+    </div>
+    <ul class="contact-list">
+      <li class="wide"><small>Email</small><a href="mailto:admin@aurora-robotics.com">admin@aurora-robotics.com</a></li>
+      <li><small>Call</small><a href="tel:+2348080785472">+234 808 078 5472</a></li>
+      <li><small>International Call</small><a href="tel:+34600070617">+34 600 070 617</a></li>
+      <li><small>WhatsApp</small><a href="https://wa.me/2347057500771" target="_blank" rel="noopener noreferrer">+234 705 750 0771</a></li>
+      <li><small>Website</small><a href="https://www.aurora-robotics.com" target="_blank" rel="noopener noreferrer">www.aurora-robotics.com</a></li>
+    </ul>
+  </div>
+  <div class="wrap legal">Aurora Robotics. Aurora Core Workshop Series 3.0, Mobile Robotics track.</div>
+</footer>
+
+<script>
+(function(){
+  var btn=document.getElementById('menuBtn');
+  var nav=document.getElementById('nav');
+  btn.addEventListener('click',function(){
+    var open=nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded',open?'true':'false');
+  });
+  nav.addEventListener('click',function(e){
+    if(e.target.tagName==='A'){nav.classList.remove('open');btn.setAttribute('aria-expanded','false');}
+  });
+  document.querySelectorAll('.frame img').forEach(function(img){
+    function mark(){img.parentElement.classList.add('missing');}
+    img.addEventListener('error',mark);
+    if(img.complete&&img.naturalWidth===0){mark();}
+  });
+})();
+</script>
+</body>
+</html>
